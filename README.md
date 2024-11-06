@@ -9,4 +9,5 @@ Weird Monster - html, css and js
 <img src="Screenshot.png"/>
 
 # Spider
+<img src="Screenshot-Spider.png"/>
 * Demo: <a href="https://tuberboy.github.io/weird-monster/spider.html" target="_blank">Click Here</a>
