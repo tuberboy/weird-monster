@@ -15,3 +15,7 @@ Weird Monster - html, css and js
 # Hourse
 <img src="Screenshot-Hourse.png"/>
 * Demo: <a href="https://tuberboy.github.io/weird-monster/hourse.html" target="_blank">Click Here</a>
+
+# Dragon
+<img src="Screenshot-Dragon.png"/>
+* Demo: <a href="https://tuberboy.github.io/weird-monster/dragon.html" target="_blank">Click Here</a>
