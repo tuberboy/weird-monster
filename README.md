@@ -11,3 +11,7 @@ Weird Monster - html, css and js
 # Spider
 <img src="Screenshot-Spider.png"/>
 * Demo: <a href="https://tuberboy.github.io/weird-monster/spider.html" target="_blank">Click Here</a>
+
+# Hourse
+<img src="Screenshot-Hourse.png"/>
+* Demo: <a href="https://tuberboy.github.io/weird-monster/hourse.html" target="_blank">Click Here</a>
