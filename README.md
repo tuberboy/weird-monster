@@ -23,3 +23,7 @@ Weird Monster - html, css and js
 # Curly Cursor
 <img src="Screenshot-CurlyCursor.png"/>
 * Demo: <a href="https://tuberboy.github.io/weird-monster/curlycursor.html" target="_blank">Click Here</a>
+
+# Canvas Text
+<img src="Screenshot-CanvasText.png"/>
+* Demo: <a href="https://tuberboy.github.io/weird-monster/canvastext.html" target="_blank">Click Here</a>
