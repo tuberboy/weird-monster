@@ -19,3 +19,7 @@ Weird Monster - html, css and js
 # Dragon
 <img src="Screenshot-Dragon.png"/>
 * Demo: <a href="https://tuberboy.github.io/weird-monster/dragon.html" target="_blank">Click Here</a>
+
+# Curly Cursor
+<img src="Screenshot-CurlyCursor.png"/>
+* Demo: <a href="https://tuberboy.github.io/weird-monster/curlycursor.html" target="_blank">Click Here</a>
