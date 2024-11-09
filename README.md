@@ -10,24 +10,35 @@ Weird Monster - html, css and js
 
 # Spider
 <img src="Screenshot-Spider.png"/>
+
 * Demo: <a href="https://tuberboy.github.io/weird-monster/spider.html" target="_blank">Click Here</a>
 
 # Hourse
 <img src="Screenshot-Hourse.png"/>
+
 * Demo: <a href="https://tuberboy.github.io/weird-monster/hourse.html" target="_blank">Click Here</a>
 
 # Dragon
 <img src="Screenshot-Dragon.png"/>
+
 * Demo: <a href="https://tuberboy.github.io/weird-monster/dragon.html" target="_blank">Click Here</a>
 
 # Curly Cursor
 <img src="Screenshot-CurlyCursor.png"/>
+
 * Demo: <a href="https://tuberboy.github.io/weird-monster/curlycursor.html" target="_blank">Click Here</a>
+
+# Neon Curly Cursor
+<img src="Screenshot-NeonCurlyCursor.png"/>
+
+* Demo: <a href="https://tuberboy.github.io/weird-monster/neoncurlycursor.html" target="_blank">Click Here</a>
 
 # Canvas Text
 <img src="Screenshot-CanvasText.png"/>
+
 * Demo: <a href="https://tuberboy.github.io/weird-monster/canvastext.html" target="_blank">Click Here</a>
 
 # Attraction
 <img src="Screenshot-Attraction.png"/>
+
 * Demo: <a href="https://tuberboy.github.io/weird-monster/attraction.html" target="_blank">Click Here</a>
