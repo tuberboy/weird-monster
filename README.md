@@ -42,3 +42,8 @@ Weird Monster - html, css and js
 <img src="Screenshot-Attraction.png"/>
 
 * Demo: <a href="https://tuberboy.github.io/weird-monster/attraction.html" target="_blank">Click Here</a>
+
+# Blue (Triangles) dragon
+<img src="Screenshot-blueTD.png"/>
+
+* Demo: <a href="https://tuberboy.github.io/weird-monster/bluetringlesdragon.html" target="_blank">Click Here</a>
