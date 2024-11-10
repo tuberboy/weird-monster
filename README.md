@@ -57,3 +57,8 @@ Weird Monster - html, css and js
 <img src="shark/Screenshot-Shark.png"/>
 
 * Demo: <a href="https://tuberboy.github.io/weird-monster/shark" target="_blank">Click Here</a>
+
+# Octopus
+<img src="Screenshot-Octopus.png"/>
+
+* Demo: <a href="https://tuberboy.github.io/weird-monster/octopus.html" target="_blank">Click Here</a>
