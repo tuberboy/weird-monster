@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8">
+  <title>Multi Card Glow Hover</title>
+  <style>
+:root{
+  --background: rgb(20,20,20);
+  --background-card-content: rgba(44,44,44, 1);
+  --glitter: url("https://assets.codepen.io/13471/noise-base.png");
+  --glitter2: url("https://assets.codepen.io/13471/noise-top.png");
+  --ratio-x: .5;
+  --ratio-y: .75;
+  --light-size: 300px;
+}
+body{
+  width: 100%;
+  height: 100%;
+  background-color: var(--background);
+  font-family: sans-serif;
+  display: flex;
+  margin: 0;
+  padding: 0;
+}
+#cards{
+  display:grid;
+  grid-template-columns: repeat(3,min-content);
+  gap: 16px;
+  flex-wrap:wrap;
+  max-width: 66%;
+  margin: auto;
+  padding: 16px;
+}
+#cards:hover > .card:before {
+  opacity: 1;
+  transition-delay: 0.1s;
+}
+#cards:hover > .card:after {
+  opacity: .925;
+  transition-delay: 0s;
+}
+
+.card {
+  position: relative;
+  background-color: rgba(33,33,33,1);
+  border-radius:10px;
+  cursor: pointer;
+  height:260px;
+  width:300px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  image-rendering: pixelate;
+}
+
+.card:before,
+.card:after {
+  transition: opacity 500ms ease;
+  image-rendering: pixelate;
+}
+
+.card:after {
+  
+  --bgoffsetx: calc( 3px * var(--ratio-x)); 
+  --bgoffsety: calc( 3px * var(--ratio-y));
+  --pointerx: calc( 100% * var(--ratio-x));
+  --pointery: calc( 100% * var(--ratio-y));
+  
+  background-color: var(--background-card-content);
+  background-image: 
+    radial-gradient(var(--light-size) circle at var(--pointerx) var(--pointery), rgba(0,0,0,0.75),black),
+    radial-gradient(var(--light-size) circle at var(--pointerx) var(--pointery), #252525cc, rgb(16, 16, 16) calc(var(--light-size) * 1)), 
+    var(--glitter2), 
+    var(--glitter2);
+  background-position: center, center, center, calc(var(--bgoffsetx)*1) calc(var(--bgoffsety)*1);
+  background-size: 300px 300px;
+  background-blend-mode: normal, color-burn, color-dodge;
+  filter: brightness(1.4) contrast(.725);
+
+  opacity: 0;
+  z-index: 2;
+  
+}
+.card:after {
+  
+  content: "";
+  position: absolute;
+  inset: 1px;
+  border-radius:9px;
+  height:calc(100% - 2px);
+  width:calc(100% - 2px);
+  transition-delay: 0.1s;
+  z-index:2;
+  
+}
+
+.card:before {
+  
+  content: "";
+  background-color: rgba(255,255,255,0);
+  border-radius: inherit;
+  opacity:0;
+  width:100%;
+  height:100%;
+  position: absolute;
+  left:0px;
+  top:0px;
+}
+
+
+.card:before {
+  content: "";
+  background-image: 
+    conic-gradient(from 0deg at calc( 0% + var(--mouse-x) ) calc( 0% + var(--mouse-y) ), 
+      #FFBD8C 0%, #FD8585 11%, #FD8585 15%, #F882FF 27%, #F882FF 31%, #8785FE 42%, #8785FE 46%, #9AFCFF 55%, #9AFCFF 59%, #99FD9C 70%, #99FD9C 74%, #FFFD84 87%, #FFFD84 91%, #FFBD8C 100%), 
+    radial-gradient( calc(var(--light-size)*1.5) circle at var(--mouse-x) var(--mouse-y) , 
+      rgba(255,255,255,.7), rgba(0, 0, 0, .5) 50% ), 
+    radial-gradient( calc(var(--light-size)*1.5) circle at var(--mouse-x) var(--mouse-y) , 
+      transparent, rgb(33,22,44) 60%, var(--background) 120% );
+  background-blend-mode: hue, color-dodge;
+  transition-delay: 0s;
+  z-index: 1;
+}
+
+.card-content {
+  position: relative;
+  z-index: 3;
+  color: white;
+}
+
+.glitter {  
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+  </style>
+
+</head>
+<body>
+<img class="glitter" src="https://assets.codepen.io/13471/noise-base.png" loading=lazy>
+<img class="glitter" src="https://assets.codepen.io/13471/noise-top.png" loading=lazy>
+<div id="cards">
+  <div class="card">
+    <div class="card-content">
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-content">
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-content">
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-content"></div>
+  </div>
+  <div class="card">
+    <div class="card-content"></div>
+  </div>
+  <div class="card">
+    <div class="card-content"></div>
+  </div>
+</div>
+  <script>
+document.body.style.setProperty( "--dw", document.body.clientWidth + "px" );
+document.body.style.setProperty( "--dh", document.body.clientHeight + "px" );
+document.getElementById("cards").onpointermove = e => {
+  for(const card of document.getElementsByClassName("card")) {
+    const rect = card.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top; 
+    
+  card.style.setProperty("--mouse-x", `${x}px`);
+  card.style.setProperty("--mouse-y", `${y}px`);
+    
+  const BOX = card.getBoundingClientRect();
+  const POINT = { x: x, y: y };
+  const RATIO = { x: POINT.x / BOX.width, y: POINT.y / BOX.height };
+  const CENTER = fromCenter( RATIO );
+  // set some css variables referenced in css
+  card.style.setProperty( "--ratio-x", RATIO.x );
+  card.style.setProperty( "--ratio-y", RATIO.y );
+  }
+}
+
+// maths 🤷‍♀️
+function fromCenter({ x, y }) {
+  return Math.min(Math.max( 0, Math.sqrt( (y - .5) * (y - .5) + (x  - .5) * (x - .5) ) / .5 ), 1 );
+}
+  </script>
+</body>
+</html>
+/body>
+</html>
