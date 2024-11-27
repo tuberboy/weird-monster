@@ -75,4 +75,4 @@ Weird Monster - html, css and js
 
 # Others
 
-* Demo: <a href="https://tuberboy.github.io/weird-monster/‎interactiveam.html" target="_blank">Click Here</a>
+* Demo: <a href="https://tuberboy.github.io/weird-monster/interactiveam.html" target="_blank">Click Here</a>
