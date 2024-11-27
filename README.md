@@ -72,3 +72,7 @@ Weird Monster - html, css and js
 <img src="Screenshot-Lightning.jpg"/>
 
 * Demo: <a href="https://tuberboy.github.io/weird-monster/lightning.html" target="_blank">Click Here</a>
+
+# Others
+
+* Demo: <a href="https://tuberboy.github.io/weird-monster/‎interactiveam.html" target="_blank">Click Here</a>
