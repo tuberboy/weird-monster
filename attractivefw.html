@@ -2,11 +2,15 @@
 <html lang="en">
  <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <title>Attractive Fireworks</title>
   <style>
     body {
 	    background: #000;
+		width: 100%;
+		height: 100%;
 	    margin: 0;
+		padding: 0;
     }
 
     canvas {
@@ -169,14 +173,24 @@
         }
 
         canvas.addEventListener('mousemove', function(e) {
-        	var currentTime = new Date().getTime();
-        	if (currentTime - lastFireworkTime > fireworkInterval) {
-        		mx = e.pageX - canvas.offsetLeft;
-        		my = e.pageY - canvas.offsetTop;
-        		fireworks.push(new Firework(cw / 2, ch, mx, my));
-        		lastFireworkTime = currentTime;
-        	}
+            createFirework(e.pageX, e.pageY);
         });
+
+        canvas.addEventListener('touchmove', function(e) {
+            e.preventDefault();
+            var touch = e.touches[0];
+            createFirework(touch.pageX, touch.pageY);
+        });
+
+        function createFirework(x, y) {
+            var currentTime = new Date().getTime();
+            if (currentTime - lastFireworkTime > fireworkInterval) {
+                mx = x - canvas.offsetLeft;
+                my = y - canvas.offsetTop;
+                fireworks.push(new Firework(cw / 2, ch, mx, my));
+                lastFireworkTime = currentTime;
+            }
+        }
 
         window.onload = loop;
     </script>
