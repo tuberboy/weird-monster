@@ -75,7 +75,7 @@ Weird Monster - html, css and js
 
 # Others
 
-* Attractive Demo: <a href="https://tuberboy.github.io/weird-monster/interactiveam.html" target="_blank">Click Here</a>
+* ChainFlow Demo: <a href="https://tuberboy.github.io/weird-monster/interactiveam.html" target="_blank">Click Here</a>
 
 * Tree Demo: <a href="https://tuberboy.github.io/weird-monster/treeam.html" target="_blank">Click Here</a>
 
