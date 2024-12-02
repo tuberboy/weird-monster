@@ -1,14 +1,14 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
 <html>
- <head>
-  <title>Interactive Animation</title>
+<head>
+  <title>Interactive ChainFlow Animation</title>
   <style>
     html,
     body {
-	  width: 100%;
+      width: 100%;
       height: 100%;
-	  margin: 0;
-	  padding: 0;
+      margin: 0;
+      padding: 0;
       background: radial-gradient(#222, #000);
     }
 
@@ -16,254 +16,278 @@
       display: block;
     }
   </style>
- </head>
+</head>
+<body>
+<canvas id="c"></canvas>
+<script>
+  var a = document.getElementById('c'),
+    c = a.getContext('2d');
 
- <body>
- <canvas id="c"></canvas>
-  <script>
-    var a = document.getElementById('c'),
-      c = a.getContext('2d');
+  var chains = [],
+    chainCount = 30,
+    entityCount = 10,
+    w = a.width,
+    h = a.height,
+    cx = w / 2,
+    cy = h / 2,
+    mx = cx,
+    my = cy,
+    lastMouseX = mx,
+    lastMouseY = my,
+    momentumX = 0,
+    momentumY = 0,
+    mouseStopped = true,
+    md = 0,
+    tick = 0,
+    maxa = 3,
+    maxv = 2;
 
-    var chains = [],
-      chainCount = 30,
-      entityCount = 10,
-      w = a.width,
-      h = a.height,
-      cx = w / 2,
-      cy = h / 2,
-      mx = cx,
-      my = cy,
-      lastMouseX = mx,
-      lastMouseY = my,
-      momentumX = 0,
-      momentumY = 0,
-      mouseStopped = true,
-      md = 0,
-      tick = 0,
-      maxa = 3,
-      maxv = 2;
+  function rand(min, max) {
+    return Math.random() * (max - min) + min;
+  }
 
-    function rand(min, max) {
-      return Math.random() * (max - min) + min;
+  function Impulse() {
+    this.x = cx;
+    this.y = cy;
+    this.ax = 0;
+    this.ay = 0;
+    this.vx = 0;
+    this.vy = 0;
+    this.r = 1;
+  }
+
+  Impulse.prototype.step = function() {
+    this.x += this.vx;
+    this.y += this.vy;
+
+    if (this.x + this.r >= w || this.x <= this.r) this.vx *= -0.8;
+    if (this.y + this.r >= h || this.y <= this.r) this.vy *= -0.8;
+
+    if (this.x + this.r >= w) this.x = w - this.r;
+    if (this.x <= this.r) this.x = this.r;
+    if (this.y + this.r >= h) this.y = h - this.r;
+    if (this.y <= this.r) this.y = this.r;
+
+    momentumX *= 0.95;
+    momentumY *= 0.95;
+
+    if (md) {
+      this.vx += (mx - this.x) * 0.1;
+      this.vy += (my - this.y) * 0.1;
+    } else if (!mouseStopped) {
+      this.vx += (mx + momentumX - this.x) * 0.03;
+      this.vy += (my + momentumY - this.y) * 0.03;
+    } else {
+      this.ax += rand(-0.4, 0.4);
+      this.ay += rand(-0.4, 0.4);
+      this.vx += this.ax;
+      this.vy += this.ay;
     }
 
-    function Impulse() {
-      this.x = cx;
-      this.y = cy;
-      this.ax = 0;
-      this.ay = 0;
-      this.vx = 0;
-      this.vy = 0;
-      this.r = 1;
+    this.ax *= Math.abs(this.ax) > maxa ? 0.75 : 1;
+    this.ay *= Math.abs(this.ay) > maxa ? 0.75 : 1;
+    this.vx *= Math.abs(this.vx) > maxv ? 0.75 : 1;
+    this.vy *= Math.abs(this.vy) > maxv ? 0.75 : 1;
+  };
+
+  function Chain() {
+    this.branches = [];
+    this.impulse = new Impulse();
+    this.branches.push(
+      new Branch({
+        chain: this,
+        attractor: this.impulse,
+      })
+    );
+  }
+
+  Chain.prototype.step = function() {
+    this.impulse.step();
+    this.branches.forEach(function(branch) {
+      branch.step();
+    });
+    this.branches.forEach(function(branch) {
+      branch.draw();
+    });
+  };
+
+  function Branch(opt) {
+    this.entities = [];
+    this.chain = opt.chain;
+    this.avoiding = 0;
+    var entity;
+    for (var i = 0; i < entityCount; i++) {
+      entity = new Entity({
+        branch: this,
+        i: i,
+        x: cx,
+        y: cy,
+        radius: 1 + (entityCount - i) / entityCount * 5,
+        damp: 0.2,
+        attractor: i === 0 ? opt.attractor : this.entities[i - 1],
+      });
+      this.entities.push(entity);
     }
+  }
 
-    Impulse.prototype.step = function() {
-      this.x += this.vx;
-      this.y += this.vy;
-
-      if (this.x + this.r >= w || this.x <= this.r) this.vx *= -0.8;
-      if (this.y + this.r >= h || this.y <= this.r) this.vy *= -0.8;
-
-      if (this.x + this.r >= w) this.x = w - this.r;
-      if (this.x <= this.r) this.x = this.r;
-      if (this.y + this.r >= h) this.y = h - this.r;
-      if (this.y <= this.r) this.y = this.r;
-
-      momentumX *= 0.95;
-      momentumY *= 0.95;
-
-      if (md) {
-        this.vx += (mx - this.x) * 0.1;
-        this.vy += (my - this.y) * 0.1;
-      } else if (!mouseStopped) {
-        this.vx += (mx + momentumX - this.x) * 0.03;
-        this.vy += (my + momentumY - this.y) * 0.03;
-      } else {
-        this.ax += rand(-0.4, 0.4);
-        this.ay += rand(-0.4, 0.4);
-        this.vx += this.ax;
-        this.vy += this.ay;
+  Branch.prototype.step = function() {
+    var avoid = false;
+    chains.forEach((otherChain) => {
+      if (otherChain !== this.chain) {
+        var dx = otherChain.impulse.x - this.chain.impulse.x;
+        var dy = otherChain.impulse.y - this.chain.impulse.y;
+        var dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < 50) avoid = true;
       }
+    });
+    this.avoiding = avoid ? 20 : Math.max(0, this.avoiding - 1);
 
-      this.ax *= Math.abs(this.ax) > maxa ? 0.75 : 1;
-      this.ay *= Math.abs(this.ay) > maxa ? 0.75 : 1;
-      this.vx *= Math.abs(this.vx) > maxv ? 0.75 : 1;
-      this.vy *= Math.abs(this.vy) > maxv ? 0.75 : 1;
-    };
+    this.entities.forEach(function(entity) {
+      entity.step();
+    });
+  };
 
-    function Chain() {
-      this.branches = [];
-      this.impulse = new Impulse();
-      this.branches.push(
-        new Branch({
-          chain: this,
-          attractor: this.impulse,
-        })
-      );
-    }
+  Branch.prototype.draw = function() {
+    c.beginPath();
+    c.moveTo(this.entities[0].x, this.entities[0].y);
+    this.entities.forEach(function(entity, i) {
+      if (i > 0) c.lineTo(entity.x, entity.y);
+    });
 
-    Chain.prototype.step = function() {
-      this.impulse.step();
-      this.branches.forEach(function(branch) {
-        branch.step();
-      });
-      this.branches.forEach(function(branch) {
-        branch.draw();
-      });
-    };
+    let strokeHue = md ? 120 : this.avoiding > 0 ? 0 : 200;
+    c.strokeStyle = `hsla(${strokeHue}, 70%, 60%, 0.3)`;
+    c.stroke();
 
-    function Branch(opt) {
-      this.entities = [];
-      this.chain = opt.chain;
-      this.avoiding = 0;
-      var entity;
-      for (var i = 0; i < entityCount; i++) {
-        entity = new Entity({
-          branch: this,
-          i: i,
-          x: cx,
-          y: cy,
-          radius: 1 + (entityCount - i) / entityCount * 5,
-          damp: 0.2,
-          attractor: i === 0 ? opt.attractor : this.entities[i - 1],
-        });
-        this.entities.push(entity);
-      }
-    }
-
-    Branch.prototype.step = function() {
-      var avoid = false;
-      chains.forEach((otherChain) => {
-        if (otherChain !== this.chain) {
-          var dx = otherChain.impulse.x - this.chain.impulse.x;
-          var dy = otherChain.impulse.y - this.chain.impulse.y;
-          var dist = Math.sqrt(dx * dx + dy * dy);
-          if (dist < 50) avoid = true;
-        }
-      });
-      this.avoiding = avoid ? 20 : Math.max(0, this.avoiding - 1);
-
-      this.entities.forEach(function(entity) {
-        entity.step();
-      });
-    };
-
-    Branch.prototype.draw = function() {
+    this.entities.forEach(function(entity, i) {
+      c.save();
+      c.translate(entity.x, entity.y);
       c.beginPath();
-      c.moveTo(this.entities[0].x, this.entities[0].y);
-      this.entities.forEach(function(entity, i) {
-        if (i > 0) c.lineTo(entity.x, entity.y);
-      });
+      c.rotate(entity.rot);
 
-      let strokeHue = md ? 120 : this.avoiding > 0 ? 0 : 200;
-      c.strokeStyle = `hsla(${strokeHue}, 70%, 60%, 0.3)`;
-      c.stroke();
+      if (entity.i === 0) {
+        c.fillStyle = md ? '#6c6' : this.avoiding > 0 ? '#c66' : '#6bf';
+      } else {
+        let entityHue = md ? 120 : this.avoiding > 0 ? 0 : 200;
+        let lightness = Math.min(50, 5 + (entity.av / maxv) * 20);
+        let opacity = (entityCount - i) / entityCount;
+        c.fillStyle = `hsla(${entityHue}, 70%, ${lightness}%, ${opacity})`;
+      }
 
-      this.entities.forEach(function(entity, i) {
-        c.save();
-        c.translate(entity.x, entity.y);
-        c.beginPath();
-        c.rotate(entity.rot);
+      c.fillRect(-entity.radius, -entity.radius, entity.radius * 2, entity.radius * 2);
+      c.restore();
+    }, this);
+  };
 
-        if (entity.i === 0) {
-          c.fillStyle = md ? '#6c6' : this.avoiding > 0 ? '#c66' : '#6bf';
-        } else {
-          let entityHue = md ? 120 : this.avoiding > 0 ? 0 : 200;
-          let lightness = Math.min(50, 5 + (entity.av / maxv) * 20);
-          let opacity = (entityCount - i) / entityCount;
-          c.fillStyle = `hsla(${entityHue}, 70%, ${lightness}%, ${opacity})`;
-        }
+  function Entity(opt) {
+    this.branch = opt.branch;
+    this.i = opt.i;
+    this.x = opt.x;
+    this.y = opt.y;
+    this.vx = 0;
+    this.vy = 0;
+    this.radius = opt.radius;
+    this.attractor = opt.attractor;
+    this.damp = opt.damp;
+  }
 
-        c.fillRect(-entity.radius, -entity.radius, entity.radius * 2, entity.radius * 2);
-        c.restore();
-      }, this);
-    };
+  Entity.prototype.step = function() {
+    this.vx = (this.attractor.x - this.x) * this.damp;
+    this.vy = (this.attractor.y - this.y) * this.damp;
+    this.x += this.vx;
+    this.y += this.vy;
+    this.av = (Math.abs(this.vx) + Math.abs(this.vy)) / 2;
 
-    function Entity(opt) {
-      this.branch = opt.branch;
-      this.i = opt.i;
-      this.x = opt.x;
-      this.y = opt.y;
-      this.vx = 0;
-      this.vy = 0;
-      this.radius = opt.radius;
-      this.attractor = opt.attractor;
-      this.damp = opt.damp;
-    }
+    var dx = this.attractor.x - this.x,
+      dy = this.attractor.y - this.y;
+    this.rot = Math.atan2(dy, dx);
+  };
 
-    Entity.prototype.step = function() {
-      this.vx = (this.attractor.x - this.x) * this.damp;
-      this.vy = (this.attractor.y - this.y) * this.damp;
-      this.x += this.vx;
-      this.y += this.vy;
-      this.av = (Math.abs(this.vx) + Math.abs(this.vy)) / 2;
+  function loop() {
+    requestAnimationFrame(loop);
 
-      var dx = this.attractor.x - this.x,
-        dy = this.attractor.y - this.y;
-      this.rot = Math.atan2(dy, dx);
-    };
+    c.globalCompositeOperation = 'destination-out';
+    c.fillStyle = 'rgba(0, 0, 0, 1)';
+    c.fillRect(0, 0, a.width, a.height);
+    c.globalCompositeOperation = 'lighter';
 
-    function loop() {
-      requestAnimationFrame(loop);
-
-      c.globalCompositeOperation = 'destination-out';
-      c.fillStyle = 'rgba(0, 0, 0, 1)';
-      c.fillRect(0, 0, a.width, a.height);
-      c.globalCompositeOperation = 'lighter';
-
-      chains.forEach(function(chain) {
-        chain.step();
-      });
-
-      tick++;
-    }
-
-    function resize() {
-      a.width = window.innerWidth;
-      a.height = window.innerHeight;
-      w = a.width;
-      h = a.height;
-      cx = w / 2;
-      cy = h / 2;
-    }
-
-    window.addEventListener('resize', resize);
-
-    window.addEventListener('mousemove', function(e) {
-      momentumX = e.clientX - lastMouseX;
-      momentumY = e.clientY - lastMouseY;
-
-      mx = e.clientX;
-      my = e.clientY;
-
-      mouseStopped = false;
-
-      lastMouseX = mx;
-      lastMouseY = my;
-
-      clearTimeout(mouseStoppedTimer);
-      mouseStoppedTimer = setTimeout(() => {
-        mouseStopped = true;
-      }, 50);
+    chains.forEach(function(chain) {
+      chain.step();
     });
 
-    let mouseStoppedTimer;
+    tick++;
+  }
 
-    window.addEventListener('mousedown', function() {
-      md = 1;
-    });
+  function resize() {
+    a.width = window.innerWidth;
+    a.height = window.innerHeight;
+    w = a.width;
+    h = a.height;
+    cx = w / 2;
+    cy = h / 2;
+  }
 
-    window.addEventListener('mouseup', function() {
-      md = 0;
-    });
+  window.addEventListener('resize', resize);
 
-    resize();
+  window.addEventListener('mousemove', function(e) {
+    momentumX = e.clientX - lastMouseX;
+    momentumY = e.clientY - lastMouseY;
 
-    for (var i = 0; i < chainCount; i++) {
-      chains.push(new Chain());
-    }
+    mx = e.clientX;
+    my = e.clientY;
 
-    loop();
-  </script>
- </body>
+    mouseStopped = false;
+
+    lastMouseX = mx;
+    lastMouseY = my;
+
+    clearTimeout(mouseStoppedTimer);
+    mouseStoppedTimer = setTimeout(() => {
+      mouseStopped = true;
+    }, 50);
+  });
+
+  let mouseStoppedTimer;
+
+  window.addEventListener('mousedown', function() {
+    md = 1;
+  });
+
+  window.addEventListener('mouseup', function() {
+    md = 0;
+  });
+
+  window.addEventListener('touchstart', function(e) {
+    const touch = e.touches[0];
+    mx = touch.clientX;
+    my = touch.clientY;
+    md = 1;
+  });
+
+  window.addEventListener('touchmove', function(e) {
+    const touch = e.touches[0];
+    mx = touch.clientX;
+    my = touch.clientY;
+
+    momentumX = mx - lastMouseX;
+    momentumY = my - lastMouseY;
+
+    lastMouseX = mx;
+    lastMouseY = my;
+
+    e.preventDefault();
+  });
+
+  window.addEventListener('touchend', function() {
+    md = 0;
+  });
+
+  resize();
+
+  for (var i = 0; i < chainCount; i++) {
+    chains.push(new Chain());
+  }
+
+  loop();
+</script>
+</body>
 </html>
