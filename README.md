@@ -84,3 +84,5 @@ Weird Monster - html, css and js
 # Games
 
 * Mario Demo: <a href="https://tuberboy.github.io/weird-monster/mario" target="_blank">Click Here</a>
+
+* Snake Demo: <a href="https://tuberboy.github.io/weird-monster/snake" target="_blank">Click Here</a>
