@@ -80,3 +80,7 @@ Weird Monster - html, css and js
 * Tree Demo: <a href="https://tuberboy.github.io/weird-monster/treeam.html" target="_blank">Click Here</a>
 
 * Fireworks Demo: <a href="https://tuberboy.github.io/weird-monster/attractivefw.html" target="_blank">Click Here</a>
+
+# Games
+
+* Mario Demo: <a href="https://tuberboy.github.io/weird-monster/mario" target="_blank">Click Here</a>
