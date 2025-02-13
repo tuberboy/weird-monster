@@ -73,6 +73,11 @@ Weird Monster - html, css and js
 
 * Demo: <a href="https://tuberboy.github.io/weird-monster/lightning.html" target="_blank">Click Here</a>
 
+# Project Deadline
+<img src="Screenshot_pdeadline.png"/>
+
+* Demo: <a href="https://tuberboy.github.io/weird-monster/project_deadline.html" target="_blank">Click Here</a>
+
 # Others
 
 * ChainFlow Demo: <a href="https://tuberboy.github.io/weird-monster/interactiveam.html" target="_blank">Click Here</a>
