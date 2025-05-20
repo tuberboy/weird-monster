@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Moon Toggle</title>
+    <style>
+        @import url('https://unpkg.com/normalize.css') layer(normalize);
+
+        @layer normalize, base, demo, glows, transitions, trail;
+
+        :root {
+            --font-size: 64px;
+            --font-size-min: 16;
+            --font-size-max: 20;
+            --font-ratio-min: 1.2;
+            --font-ratio-max: 1.33;
+            --font-width-min: 375;
+            --font-width-max: 1500;
+            --bg-light: hsl(235 5% 85%);
+            --bg-dark: hsl(220 27% 6%);
+            --button-light: hsl(223 4% 73%);
+            --button-dark: hsl(220 27% 6%);
+            --step: 0.5s;
+            --ease: linear(0, 0.2342 12.49%, 0.4374 24.99%, 0.6093 37.49%, 0.6835 43.74%, 0.7499 49.99%, 0.8086 56.25%, 0.8593 62.5%, 0.9023 68.75%, 0.9375 75%, 0.9648 81.25%, 0.9844 87.5%, 0.9961 93.75%, 1);
+            --glow: hsl(182 90% 92%);
+        }
+
+        @layer base {
+            html {
+                --line: light-dark(hsl(0 0% 10% / 0.3), hsl(0 0% 100% / 0.3));
+                color-scheme: light dark;
+            }
+
+            [data-theme='light'] {
+                --line: hsl(0 0% 10% / 0.3);
+                color-scheme: light only;
+            }
+
+            [data-theme='dark'] {
+                --line: hsl(0 0% 100% / 0.3);
+                color-scheme: dark only;
+            }
+
+            .fluid {
+                --fluid-min: calc(var(--font-size-min) * pow(var(--font-ratio-min), var(--font-level, 0)));
+                --fluid-max: calc(var(--font-size-max) * pow(var(--font-ratio-max), var(--font-level, 0)));
+                --fluid-preferred: calc((var(--fluid-max) - var(--fluid-min)) / (var(--font-width-max) - var(--font-width-min)));
+                --fluid-type: clamp((var(--fluid-min) / 16) * 1rem, ((var(--fluid-min) / 16) * 1rem) - (((var(--fluid-preferred) * var(--font-width-min)) / 16) * 1rem) + (var(--fluid-preferred) * var(--variable-unit, 100vi)), (var(--fluid-max) / 16) * 1rem);
+                font-size: var(--fluid-type);
+            }
+
+            *, *:after, *:before {
+                box-sizing: border-box;
+            }
+
+            body {
+                display: grid;
+                place-items: center;
+                min-height: 100vh;
+                font-family: system-ui, 'SF Pro Text', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+                background: light-dark(var(--bg-light), var(--bg-dark));
+                overflow: hidden;
+                transition: background-color var(--step) var(--ease), color var(--step) var(--ease);
+            }
+
+            body::before {
+                --size: 45px;
+                content: '';
+                height: 100vh;
+                width: 100vw;
+                position: fixed;
+                background: linear-gradient(90deg, var(--line) 1px, transparent 1px var(--size)) 50% 50% / var(--size) var(--size), linear-gradient(var(--line) 1px, transparent 1px var(--size)) 50% 50% / var(--size) var(--size);
+                mask: linear-gradient(-20deg, transparent 64%, white);
+                top: 0;
+                pointer-events: none;
+                z-index: -1;
+            }
+
+            .sr-only {
+                position: absolute;
+                width: 1px;
+                height: 1px;
+                padding: 0;
+                margin: -1px;
+                overflow: hidden;
+                clip: rect(0, 0, 0, 0);
+                white-space: nowrap;
+                border-width: 0;
+            }
+        }
+
+        @layer demo {
+            main {
+                font-size: var(--font-size);
+                scale: 1;
+            }
+
+            button {
+                background: transparent;
+                font-size: var(--font-size);
+                height: 3em;
+                padding: 0;
+                border-radius: 3em;
+                border: 0;
+                aspect-ratio: 1.8;
+                position: relative;
+                cursor: pointer;
+            }
+
+            .socket {
+                position: absolute;
+                inset: 0;
+                border-radius: 3em;
+                box-shadow: -0.05em 0.1em 0.2em -0.2em white;
+                background: light-dark(hsl(0 0% 90%), hsl(0 0% 0%));
+                transition: background-color var(--step) var(--ease), box-shadow var(--step) var(--ease);
+            }
+
+            .socket-shadow {
+                position: absolute;
+                inset: 0;
+                opacity: 0;
+                border-radius: 3em;
+                box-shadow: 0 0.075em 0.1em 0 white;
+                transition: opacity var(--step) var(--ease);
+            }
+
+            .face {
+                position: absolute;
+                inset: 0.15em;
+                border-radius: 3em;
+                scale: 1;
+                transition: scale var(--step) var(--ease);
+            }
+
+            .toggle::before {
+                content: '';
+                width: 150vmax;
+                height: 200vmax;
+                border-radius: 0;
+                background: radial-gradient(hsl(0 0% 100% / 0.25), hsl(0 0% 0% / 1) 35%);
+                position: absolute;
+                translate: -50% -65%;
+                left: 50%;
+                top: 50%;
+                z-index: -1;
+                opacity: 0.35;
+                transition: scale var(--step) var(--ease), opacity var(--step) var(--ease);
+                pointer-events: none;
+            }
+
+            .face-shadow, .face-shadow::after, .face-shadow::before {
+                position: absolute;
+                inset: 0;
+                border-radius: 3em;
+            }
+
+            .face-shadow::after, .face-shadow::before {
+                content: '';
+            }
+
+            .face-shadow::before {
+                background: black;
+            }
+
+            .face-shadow::after {
+                background: white;
+                scale: 0.5;
+                transition: opacity var(--step) var(--ease), translate var(--step) var(--ease), filter var(--step) var(--ease), scale var(--step) var(--ease);
+            }
+
+            .face-plate {
+                position: absolute;
+                inset: 0;
+                border-radius: 3em;
+                box-shadow: -0.05em 0.1em 0.2em -0.2em white inset;
+                background: conic-gradient(from 45deg, transparent, hsl(0 0% 100% / 0.05)), light-dark(var(--button-light), var(--button-dark));
+                transition: background-color var(--step) var(--ease);
+            }
+
+            .face-shine {
+                position: absolute;
+                inset: 0;
+                opacity: 0;
+                border-radius: 3em;
+                transition: opacity var(--step) var(--ease);
+            }
+
+            .face-shine-shadow {
+                position: absolute;
+                inset: 0;
+                border-radius: 3em;
+                mask: conic-gradient(from 0deg, white 90deg, transparent 110deg 200deg, white 215deg 280deg, transparent 315deg);
+                box-shadow: 0.075em 0 0.025em -0.025em hsl(0 0% 0% / 0.5) inset, -0.075em -0.05em 0.025em -0.025em hsl(0 0% 0% / 0.5) inset;
+            }
+
+            .face-shine::before {
+                content: '';
+                position: absolute;
+                inset: 0.05em;
+                border-radius: 3em;
+                box-shadow: 0 -0.05em 0.025em -0.025em hsl(0 0% 50% / 0.5) inset, -0.025em 0.05em 0.025em -0.025em hsl(0 0% 100% / 0.5) inset;
+            }
+
+            .face-shine::after {
+                content: '';
+                position: absolute;
+                inset: 0;
+                background: conic-gradient(from 45deg, transparent, hsl(0 0% 100% / 0.25));
+                border-radius: 3em;
+            }
+
+            .face svg {
+                width: 25%;
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                translate: -52% -48%;
+                overflow: visible;
+            }
+
+            .face svg path {
+                transform-box: fill-box;
+                transform-origin: center;
+            }
+
+            .inner-face {
+                fill: hsl(230 5% 80%);
+            }
+
+            .glow-path {
+                fill: var(--glow);
+                stroke: var(--glow);
+                stroke-width: 0;
+                opacity: 1;
+            }
+        }
+
+        @layer glows {
+            .face-glowdrop {
+                position: absolute;
+                inset: 0;
+                border-radius: 3em;
+                scale: 0;
+                transition: scale var(--step) var(--ease);
+            }
+
+            .face-glowdrop::after, .face-glowdrop::before {
+                content: '';
+                height: 50%;
+                aspect-ratio: 1;
+                background: white;
+                filter: blur(6px);
+                position: absolute;
+                z-index: -1;
+                border-radius: 50%;
+            }
+
+            .face-glowdrop::before {
+                left: 4%;
+                width: 56%;
+                translate: 0 -25%;
+            }
+
+            .face-glowdrop::after {
+                bottom: 0;
+                right: 12%;
+                width: 34%;
+                translate: 0 20%;
+            }
+
+            .face-glows {
+                position: absolute;
+                inset: -0.075em;
+                opacity: 0;
+                border-radius: 3em;
+                mix-blend-mode: plus-lighter;
+                filter: blur(8px);
+                z-index: 20;
+                mask: conic-gradient(from 280deg, transparent, white 20deg 45deg, transparent 95deg), conic-gradient(from 110deg, transparent, white 20deg, transparent 95deg);
+                transition: opacity var(--step) var(--ease);
+            }
+
+            .face-glows div {
+                position: absolute;
+                inset: 0;
+                border-radius: 3em;
+                filter: blur(4px);
+                border: 0.1em solid white;
+            }
+        }
+
+        @layer transitions {
+            .outline {
+                transition: stroke var(--step) var(--ease);
+            }
+
+            .inner-bg {
+                fill: black;
+                transition: fill var(--step) var(--ease);
+            }
+
+            .glow {
+                z-index: 3;
+                filter: drop-shadow(0 0 0.2em var(--glow));
+                opacity: 0;
+                transition: opacity var(--step) var(--ease);
+                will-change: opacity;
+            }
+
+            button:active .socket {
+                box-shadow: -0.045em 0.1em 0.2em -0.15em white;
+            }
+
+            button:active .face {
+                scale: 0.99;
+            }
+
+            .toggle[aria-pressed='true'] .face {
+                scale: 1.12;
+            }
+
+            .toggle[aria-pressed='true'] .outline {
+                stroke: hsl(0 0% 30%);
+            }
+
+            .toggle[aria-pressed='true'] .inner-bg {
+                fill: hsl(0 0% 20%);
+            }
+
+            .toggle[aria-pressed='true'] .socket {
+                box-shadow: -0.025em 0.08em 0.2em -0.1em white;
+            }
+
+            .toggle[aria-pressed='true'] .glow {
+                opacity: 0;
+            }
+
+            .toggle[aria-pressed='true'] .face-glowdrop {
+                scale: 1;
+            }
+
+            .toggle[aria-pressed='true']::before {
+                scale: 2;
+                opacity: 0;
+            }
+
+            .toggle[aria-pressed='true'] .face-shadow::before {
+                translate: -15% 55%;
+                filter: blur(1em);
+                opacity: 0.35;
+            }
+
+            .toggle[aria-pressed='true'] .face-shadow::after {
+                filter: blur(0.5em);
+                scale: 1;
+            }
+
+            .toggle[aria-pressed='true'] .socket-shadow,
+            .toggle[aria-pressed='true'] .face-glows,
+            .toggle[aria-pressed='true'] .face-shine {
+                opacity: 1;
+            }
+        }
+
+        @layer trail {
+            :root {
+                --offset: calc(var(--step) * 0.5);
+            }
+
+            .trail {
+                stroke-dasharray: 10 80;
+                stroke-dashoffset: 10;
+                opacity: 0;
+                stroke-width: 4;
+                transition: stroke-dashoffset calc(var(--step) * 3) var(--ease), opacity calc(var(--step) * 0.5) linear(0, 0.0039 6.25%, 0.0156 12.5%, 0.0352 18.75%, 0.0625 25%, 0.0977 31.25%, 0.1407 37.5%, 0.1914 43.74%, 0.2499 49.99%, 0.3164 56.25%, 0.3906 62.5%, 0.5625 75%, 0.7656 87.5%, 1);
+                transition-delay: var(--offset), calc(var(--offset) + var(--step) * 2.5);
+            }
+
+            .toggle[aria-pressed='true'] .trail {
+                stroke-dashoffset: -70;
+                opacity: 1;
+                transition: stroke-dashoffset 0s;
+            }
+
+            .trail-holder {
+                z-index: 2;
+                filter: blur(10px);
+            }
+        }
+    </style>
+</head>
+<body translate="no">
+    <main>
+        <button aria-pressed="false" class="toggle">
+            <div class="socket">
+                <div class="socket-shadow"></div>
+            </div>
+            <div class="face">
+                <div class="face-shadow"></div>
+                <div class="face-glowdrop"></div>
+                <div class="face-plate"></div>
+                <div class="face-shine">
+                    <div class="face-shine-shadow"></div>
+                </div>
+                <div class="face-glows"><div></div></div>
+                <svg class="glow" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path class="glow-path" d="M9.8815 1.36438C9.70639 1.18942 9.48342 1.07041 9.24073 1.02235C8.99803 0.974286 8.74653 0.999323 8.51808 1.09429C4.54484 2.75146 1.75 6.6732 1.75 11.25C1.75 17.3262 6.67489 22.25 12.75 22.25C14.9217 22.2501 17.0448 21.6075 18.852 20.4032C20.6591 19.1989 22.0695 17.4868 22.9055 15.4825C23.0007 15.2532 23.0256 15.0015 22.9774 14.7587C22.9291 14.5159 22.8099 14.2929 22.6348 14.118C22.4597 13.9431 22.2366 13.8241 21.9937 13.7761C21.7509 13.7281 21.4993 13.7533 21.2708 13.8484C20.2346 14.2801 19.1231 14.5016 18.0007 14.5C15.7457 14.5 13.5837 13.6045 11.9896 12.0104C10.3955 10.4163 9.5 8.25433 9.5 5.99999C9.49838 4.8769 9.71983 3.76541 10.1515 2.72938C10.2468 2.50072 10.2721 2.24888 10.224 2.00584C10.1759 1.76281 10.0567 1.53954 9.8815 1.36438Z"/>
+                </svg>
+                <svg class="trail-holder" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path class="trail" d="M9.8815 1.36438C9.70639 1.18942 9.48342 1.07041 9.24073 1.02235C8.99803 0.974286 8.74653 0.999323 8.51808 1.09429C4.54484 2.75146 1.75 6.6732 1.75 11.25C1.75 17.3262 6.67489 22.25 12.75 22.25C14.9217 22.2501 17.0448 21.6075 18.852 20.4032C20.6591 19.1989 22.0695 17.4868 22.9055 15.4825C23.0007 15.2532 23.0256 15.0015 22.9774 14.7587C22.9291 14.5159 22.8099 14.2929 22.6348 14.118C22.4597 13.9431 22.2366 13.8241 21.9937 13.7761C21.7509 13.7281 21.4993 13.7533 21.2708 13.8484C20.2346 14.2801 19.1231 14.5016 18.0007 14.5C15.7457 14.5 13.5837 13.6045 11.9896 12.0104C10.3955 10.4163 9.5 8.25433 9.5 5.99999C9.49838 4.8769 9.71983 3.76541 10.1515 2.72938C10.2468 2.50072 10.2721 2.24888 10.224 2.00584C10.1759 1.76281 10.0567 1.53954 9.8815 1.36438Z" stroke="#2CC6FE" stroke-linecap="round" stroke-dasharray="7 80" stroke-dashoffset="40"/>
+                </svg>
+                <svg class="main" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <g>
+                        <path class="outline" d="M9.8815 1.36438C9.70639 1.18942 9.48342 1.07041 9.24073 1.02235C8.99803 0.974286 8.74653 0.999323 8.51808 1.09429C4.54484 2.75146 1.75 6.6732 1.75 11.25C1.75 17.3262 6.67489 22.25 12.75 22.25C14.9217 22.2501 17.0448 21.6075 18.852 20.4032C20.6591 19.1989 22.0695 17.4868 22.9055 15.4825C23.0007 15.2532 23.0256 15.0015 22.9774 14.7587C22.9291 14.5159 22.8099 14.2929 22.6348 14.118C22.4597 13.9431 22.2366 13.8241 21.9937 13.7761C21.7509 13.7281 21.4993 13.7533 21.2708 13.8484C20.2346 14.2801 19.1231 14.5016 18.0007 14.5C15.7457 14.5 13.5837 13.6045 11.9896 12.0104C10.3955 10.4163 9.5 8.25433 9.5 5.99999C9.49838 4.8769 9.71983 3.76541 10.1515 2.72938C10.2468 2.50072 10.2721 2.24888 10.224 2.00584C10.1759 1.76281 10.0567 1.53954 9.8815 1.36438Z" fill="black" stroke="black" stroke-width="2"/>
+                        <path mask="url(#fade)" class="outline-shadow" filter="url(#outer-shadow)" d="M9.8815 1.36438C9.70639 1.18942 9.48342 1.07041 9.24073 1.02235C8.99803 0.974286 8.74653 0.999323 8.51808 1.09429C4.54484 2.75146 1.75 6.6732 1.75 11.25C1.75 17.3262 6.67489 22.25 12.75 22.25C14.9217 22.2501 17.0448 21.6075 18.852 20.4032C20.6591 19.1989 22.0695 17.4868 22.9055 15.4825C23.0007 15.2532 23.0256 15.0015 22.9774 14.7587C22.9291 14.5159 22.8099 14.2929 22.6348 14.118C22.4597 13.9431 22.2366 13.8241 21.9937 13.7761C21.7509 13.7281 21.4993 13.7533 21.2708 13.8484C20.2346 14.2801 19.1231 14.5016 18.0007 14.5C15.7457 14.5 13.5837 13.6045 11.9896 12.0104C10.3955 10.4163 9.5 8.25433 9.5 5.99999C9.49838 4.8769 9.71983 3.76541 10.1515 2.72938C10.2468 2.50072 10.2721 2.24888 10.224 2.00584C10.1759 1.76281 10.0567 1.53954 9.8815 1.36438Z" fill="black" stroke="black" stroke-width="2"/>
+                    </g>
+                    <path class="trail" d="M9.8815 1.36438C9.70639 1.18942 9.48342 1.07041 9.24073 1.02235C8.99803 0.974286 8.74653 0.999323 8.51808 1.09429C4.54484 2.75146 1.75 6.6732 1.75 11.25C1.75 17.3262 6.67489 22.25 12.75 22.25C14.9217 22.2501 17.0448 21.6075 18.852 20.4032C20.6591 19.1989 22.0695 17.4868 22.9055 15.4825C23.0007 15.2532 23.0256 15.0015 22.9774 14.7587C22.9291 14.5159 22.8099 14.2929 22.6348 14.118C22.4597 13.9431 22.2366 13.8241 21.9937 13.7761C21.7509 13.7281 21.4993 13.7533 21.2708 13.8484C20.2346 14.2801 19.1231 14.5016 18.0007 14.5C15.7457 14.5 13.5837 13.6045 11.9896 12.0104C10.3955 10.4163 9.5 8.25433 9.5 5.99999C9.49838 4.8769 9.71983 3.76541 10.1515 2.72938C10.2468 2.50072 10.2721 2.24888 10.224 2.00584C10.1759 1.76281 10.0567 1.53954 9.8815 1.36438Z" stroke="#2CC6FE" stroke-linecap="round"/>
+                    <g class="inner">
+                        <path class="inner-face" fill-rule="evenodd" clip-rule="evenodd" d="M9.528 1.71799C9.63312 1.82308 9.70465 1.95704 9.73349 2.10286C9.76234 2.24868 9.7472 2.39979 9.69 2.53699C9.23282 3.6342 8.99828 4.81134 9 5.99999C9 8.38694 9.94821 10.6761 11.636 12.3639C13.3239 14.0518 15.6131 15 18 15C19.1886 15.0017 20.3658 14.7672 21.463 14.31C21.6001 14.2529 21.7511 14.2378 21.8968 14.2666C22.0425 14.2954 22.1763 14.3668 22.2814 14.4717C22.3865 14.5767 22.458 14.7105 22.487 14.8562C22.5159 15.0018 22.501 15.1528 22.444 15.29C21.646 17.2032 20.2997 18.8376 18.5747 19.9871C16.8496 21.1367 14.823 21.7501 12.75 21.75C6.951 21.75 2.25 17.05 2.25 11.25C2.25 6.88199 4.917 3.13799 8.71 1.55599C8.84707 1.49901 8.99797 1.48399 9.14359 1.51282C9.28921 1.54166 9.42299 1.61307 9.528 1.71799Z"/>
+                        <path mask="url(#inner-fade)" class="inner-bg" fill-rule="evenodd" clip-rule="evenodd" d="M9.528 1.71799C9.63312 1.82308 9.70465 1.95704 9.73349 2.10286C9.76234 2.24868 9.7472 2.39979 9.69 2.53699C9.23282 3.6342 8.99828 4.81134 9 5.99999C9 8.38694 9.94821 10.6761 11.636 12.3639C13.3239 14.0518 15.6131 15 18 15C19.1886 15.0017 20.3658 14.7672 21.463 14.31C21.6001 14.2529 21.7511 14.2378 21.8968 14.2666C22.0425 14.2954 22.1763 14.3668 22.2814 14.4717C22.3865 14.5767 22.458 14.7105 22.487 14.8562C22.5159 15.0018 22.501 15.1528 22.444 15.29C21.646 17.2032 20.2997 18.8376 18.5747 19.9871C16.8496 21.1367 14.823 21.7501 12.75 21.75C6.951 21.75 2.25 17.05 2.25 11.25C2.25 6.88199 4.917 3.13799 8.71 1.55599C8.84707 1.49901 8.99797 1.48399 9.14359 1.51282C9.28921 1.54166 9.42299 1.61307 9.528 1.71799Z"/>
+                        <g class="inner-shadow" filter="url(#inner-shadow)" mask="url(#fade)">
+                            <path fill-rule="evenodd" clip-rule="evenodd" d="M9.528 1.71799C9.63312 1.82308 9.70465 1.95704 9.73349 2.10286C9.76234 2.24868 9.7472 2.39979 9.69 2.53699C9.23282 3.6342 8.99828 4.81134 9 5.99999C9 8.38694 9.94821 10.6761 11.636 12.3639C13.3239 14.0518 15.6131 15 18 15C19.1886 15.0017 20.3658 14.7672 21.463 14.31C21.6001 14.2529 21.7511 14.2378 21.8968 14.2666C22.0425 14.2954 22.1763 14.3668 22.2814 14.4717C22.3865 14.5767 22.458 14.7105 22.487 14.8562C22.5159 15.0018 22.501 15.1528 22.444 15.29C21.646 17.2032 20.2997 18.8376 18.5747 19.9871C16.8496 21.1367 14.823 21.7501 12.75 21.75C6.951 21.75 2.25 17.05 2.25 11.25C2.25 6.88199 4.917 3.13799 8.71 1.55599C8.84707 1.49901 8.99797 1.48399 9.14359 1.51282C9.28921 1.54166 9.42299 1.61307 9.528 1.71799Z" fill="hsl(0 0% 10% / 0.01)"/>
+                        </g>
+                    </g>
+                    <defs>
+                        <filter id="inner-shadow" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+                            <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+                            <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
+                            <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+                            <feOffset dx="0.4" dy="0.5"/>
+                            <feGaussianBlur stdDeviation="0.1"/>
+                            <feComposite in2="hardAlpha" operator="arithmetic" k2="-1" k3="1"/>
+                            <feColorMatrix type="matrix" values="0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 1 0"/>
+                            <feBlend mode="normal" in2="shape" result="effect1_innerShadow_731_4"/>
+                            <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+                            <feOffset dx="0.3" dy="-0.5"/>
+                            <feGaussianBlur stdDeviation="0.1"/>
+                            <feComposite in2="hardAlpha" operator="arithmetic" k2="-1" k3="1"/>
+                            <feColorMatrix type="matrix" values="0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 1 0"/>
+                            <feBlend mode="normal" in2="effect1_innerShadow_731_4" result="effect2_innerShadow_731_4"/>
+                        </filter>
+                        <linearGradient id="fade-gradient" x1="0%" y1="0%" x2="100%" y2="0%" gradientTransform="rotate(45)" gradientUnits="userSpaceOnUse">
+                            <stop offset="0.45" stop-color="white" stop-opacity="0"/>
+                            <stop offset="0.75" stop-color="white" stop-opacity="0.75"/>
+                            <stop offset="0.95" stop-color="white" stop-opacity="0.5"/>
+                            <stop offset="1" stop-color="white" stop-opacity="0.35"/>
+                        </linearGradient>
+                        <linearGradient id="inner-fade-gradient" x1="0%" y1="0%" x2="100%" y2="0%" gradientTransform="rotate(45)" gradientUnits="userSpaceOnUse">
+                            <stop offset="0" stop-color="transparent" stop-opacity="0"/>
+                            <stop offset="0.75" stop-color="white" stop-opacity="1"/>
+                        </linearGradient>
+                        <mask id="fade">
+                            <rect width="100%" height="100%" fill="url(#fade-gradient)"/>
+                        </mask>
+                        <mask id="inner-fade">
+                            <rect width="100%" height="100%" fill="url(#inner-fade-gradient)"/>
+                        </mask>
+                        <filter id="outer-shadow" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+                            <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+                            <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+                            <feOffset dy="0.5" dx="-0.05"/>
+                            <feGaussianBlur stdDeviation="0.25"/>
+                            <feComposite in2="hardAlpha" operator="out"/>
+                            <feColorMatrix type="matrix" values="0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 1 0"/>
+                            <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_731_4"/>
+                            <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_731_4" result="shape"/>
+                        </filter>
+                    </defs>
+                </svg>
+                <span class="sr-only">Toggle Theme</span>
+            </div>
+        </button>
+    </main>
+    <script type="module">
+        import { Pane } from 'https://cdn.skypack.dev/tweakpane@4.0.4';
+        const config = { theme: 'dark' };
+        const ctrl = new Pane({ title: 'Config', expanded: true });
+        const toggle = document.querySelector('.toggle');
+        const update = () => {
+            document.documentElement.dataset.theme = config.theme;
+        };
+        ctrl.addBinding(config, 'theme', {
+            label: 'Theme',
+            options: { System: 'system', Light: 'light', Dark: 'dark' }
+        }).on('change', () => {
+            toggle.setAttribute('aria-pressed', config.theme === 'light');
+            update();
+        });
+        toggle.addEventListener('click', () => {
+            const light = toggle.matches('[aria-pressed="false"]');
+            toggle.setAttribute('aria-pressed', light);
+            config.theme = light ? 'light' : 'dark';
+            ctrl.refresh();
+        });
+        update();
+    </script>
+</body>
+</html>
