@@ -83,6 +83,10 @@ Weird Monster - html, css and js
 
 * Demo: <a href="https://tuberboy.github.io/weird-monster/glowingloginform.html" target="_blank">Click Here</a>
 
+# Moon Toggle
+<img src="Screenshot-MoonToggle.png"/>
+
+* Demo: <a href="https://tuberboy.github.io/weird-monster/moontoggle.html" target="_blank">Click Here</a>
 
 # Others
 
