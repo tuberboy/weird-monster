@@ -1,5 +1,11 @@
 # weird-monster
 Weird Monster - html, css and js
+
+# Happy New Year
+<img src="happy_new_year.jpg"/>
+
+* Demo: <a href="https://tuberboy.github.io/weird-monster/happy_new_year.html" target="_blank">Click Here</a>
+
 # Demo
 * One: <a href="https://tuberboy.github.io/weird-monster/one.html" target="_blank">Click Here</a>
 * Two: <a href="https://tuberboy.github.io/weird-monster/two.html" target="_blank">Click Here</a>
